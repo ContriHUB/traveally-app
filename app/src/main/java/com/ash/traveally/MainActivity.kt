@@ -46,7 +46,7 @@ fun App() {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = MAIN_SCREEN
+        startDestination = LOGIN_SCREEN
     ) {
         composable(route = START_PAGER_SCREEN) {
             StartPagerScreen(

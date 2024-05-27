@@ -10,6 +10,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,9 +33,8 @@ import com.ash.traveally.R
 import com.ash.traveally.ui.components.buttons.FullWidthButton
 import com.ash.traveally.ui.components.dialog.FailureDialog
 import com.ash.traveally.ui.components.dialog.LoaderDialog
+import com.ash.traveally.ui.components.text.AppTextField
 import com.ash.traveally.ui.components.text.PasswordTextField
-import com.ash.traveally.ui.components.text.EmailTextField
-import com.ash.traveally.ui.components.text.UsernameTextField
 import com.ash.traveally.ui.theme.LightGreen
 import com.ash.traveally.ui.theme.MontserratAlternates
 import com.ash.traveally.viewmodel.LoginViewModel
@@ -146,16 +148,18 @@ private fun LoginForm(
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit
 ) {
-    EmailTextField(
+    AppTextField(
+        value = email,
+        label = "Email",
+        onValueChange = onEmailChange,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 16.dp, vertical = 12.dp)
             .background(MaterialTheme.colorScheme.background),
-        value = email,
-        onValueChange = onEmailChange,
-        isError = !isValidEmail
+        leadingIcon = { Icon(Icons.Outlined.Email, "Email") },
+        isError = !isValidEmail,
+        helperText = stringResource(R.string.message_field_email_invalid)
     )
-
     PasswordTextField(
         modifier = Modifier
             .fillMaxWidth()

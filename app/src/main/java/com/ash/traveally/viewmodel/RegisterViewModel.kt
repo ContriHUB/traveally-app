@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ash.traveally.models.RegisterRequest
+import com.ash.traveally.models.User
 import com.ash.traveally.repository.UserRepository
 import com.ash.traveally.utils.AuthValidator
 import com.ash.traveally.utils.NetworkResult
@@ -21,6 +21,10 @@ class RegisterViewModel @Inject constructor(
 
     var registerState: RegisterState by mutableStateOf(RegisterState())
 
+    fun setName(name: String) {
+        registerState = registerState.copy(name = name)
+    }
+
     fun setEmail(email: String) {
         registerState = registerState.copy(email = email)
     }
@@ -31,6 +35,18 @@ class RegisterViewModel @Inject constructor(
 
     fun setPhoneNumber(phoneNumber: String) {
         registerState = registerState.copy(phoneNumber = phoneNumber)
+    }
+
+    fun setCity(city: String) {
+        registerState = registerState.copy(city = city)
+    }
+
+    fun setCountry(country: String) {
+        registerState = registerState.copy(country = country)
+    }
+
+    fun setBio(bio: String) {
+        registerState = registerState.copy(bio = bio)
     }
 
     fun setPassword(password: String) {
@@ -50,23 +66,28 @@ class RegisterViewModel @Inject constructor(
         if (!validateCredentials()) return
         viewModelScope.launch {
             registerState = registerState.copy(isLoading = true)
-            val registerRequest = RegisterRequest(
+            val registerRequest = User(
+                name = registerState.name,
                 email = registerState.email,
-                password = registerState.password,
                 username = registerState.username,
-                phoneNumber = registerState.phoneNumber
+                phoneNumber = registerState.phoneNumber.toLong(),
+                city = registerState.city,
+                country = registerState.country,
+                bio = registerState.bio,
+                password = registerState.password,
             )
             val response = repository.registerUser(registerRequest)
             registerState = when (response) {
                 is NetworkResult.Error -> registerState.copy(error = response.message, isLoading = false, isRegisteredIn = false)
                 is NetworkResult.Success -> {
-                    registerState.copy(message = response.data, isLoading = false, isRegisteredIn = true)
+                    registerState.copy(response = response.data, isLoading = false, isRegisteredIn = true)
                 }
             }
         }
     }
 
     private fun validateCredentials(): Boolean {
+        val isValidName = AuthValidator.isValidName(registerState.name)
         val isValidEmail = AuthValidator.isValidEmail(registerState.email)
         val isValidPassword = AuthValidator.isValidPassword(registerState.password)
         val isValidUsername = AuthValidator.isValidUsername(registerState.username)
@@ -76,6 +97,7 @@ class RegisterViewModel @Inject constructor(
             registerState.confirmPassword
         )
         registerState = registerState.copy(
+            isValidName = isValidName,
             isValidEmail = isValidEmail,
             isValidPassword = isValidPassword,
             isValidUsername = isValidUsername,
@@ -85,5 +107,4 @@ class RegisterViewModel @Inject constructor(
 
         return isValidEmail && isValidPassword && isValidUsername && isValidPhoneNumber && arePasswordAndConfirmPasswordSame
     }
-
 }

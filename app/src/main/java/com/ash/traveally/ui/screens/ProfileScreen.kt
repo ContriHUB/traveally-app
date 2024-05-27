@@ -57,7 +57,7 @@ fun ProfileScreen(user: User = userItem) {
         )
         Divider()
         Text(
-            text = "Username : " + user.username,
+            text = "Username : @" + user.username,
             style = TextStyle(
                 fontSize = 16.sp,
                 fontFamily = MontserratAlternates

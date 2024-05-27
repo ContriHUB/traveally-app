@@ -5,15 +5,17 @@ data class User(
     val username: String,
     val phoneNumber: Long,
     val email: String,
+    val password: String,
     val city: String,
     val country: String,
-    val photoUrl: String,
+    val photoUrl: String = "https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
     val bio: String
 )
 val userItem = User(
     name = "John Doe",
     username = "johndoe3",
     email = "john.doe@example.com",
+    password = "1234",
     phoneNumber = 1234567890,
     city = "New York",
     country = "USA",

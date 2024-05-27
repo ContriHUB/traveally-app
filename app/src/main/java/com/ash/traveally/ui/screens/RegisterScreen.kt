@@ -3,12 +3,23 @@ package com.ash.traveally.ui.screens
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AlternateEmail
+import androidx.compose.material.icons.outlined.Description
+import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.Flag
+import androidx.compose.material.icons.outlined.LocationCity
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Phone
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,10 +39,8 @@ import com.ash.traveally.R
 import com.ash.traveally.ui.components.buttons.FullWidthButton
 import com.ash.traveally.ui.components.dialog.FailureDialog
 import com.ash.traveally.ui.components.dialog.LoaderDialog
-import com.ash.traveally.ui.components.text.EmailTextField
+import com.ash.traveally.ui.components.text.AppTextField
 import com.ash.traveally.ui.components.text.PasswordTextField
-import com.ash.traveally.ui.components.text.PhoneNumberTextField
-import com.ash.traveally.ui.components.text.UsernameTextField
 import com.ash.traveally.ui.theme.LightGreen
 import com.ash.traveally.ui.theme.MontserratAlternates
 import com.ash.traveally.viewmodel.RegisterViewModel
@@ -47,19 +56,28 @@ fun RegisterScreen(
 
     SignUpContent(
         isLoading = state.isLoading,
+        name = state.name,
         email = state.email,
         username = state.username,
         phoneNumber = state.phoneNumber,
+        city = state.city,
+        country = state.country,
+        bio = state.bio,
         password = state.password,
         confirmPassword = state.confirmPassword,
+        isValidName = state.isValidName ?: true,
         isValidEmail = state.isValidEmail ?: true,
         isValidUsername = state.isValidUsername ?: true,
         isValidPhoneNumber = state.isValidPhoneNumber ?: true,
         isValidPassword = state.isValidPassword ?: true,
         isValidConfirmPassword = state.isValidConfirmPassword ?: true,
-        onEmailChange = viewModel:: setEmail,
+        onNameChange = viewModel::setName,
+        onEmailChange = viewModel::setEmail,
         onUsernameChange = viewModel::setUsername,
         onPhoneNumberChange = viewModel::setPhoneNumber,
+        onCityChange = viewModel::setCity,
+        onCountryChange = viewModel::setCountry,
+        onBioChange = viewModel::setBio,
         onPasswordChange = viewModel::setPassword,
         onConfirmPasswordChange = viewModel::setConfirmPassword,
         onDialogDismiss = viewModel::clearError,
@@ -70,7 +88,7 @@ fun RegisterScreen(
 
     LaunchedEffect(state.isRegisteredIn) {
         if (state.isRegisteredIn) {
-            Toast.makeText(context, state.message!!.message, Toast.LENGTH_LONG).show()
+            Toast.makeText(context, state.response?.message, Toast.LENGTH_LONG).show()
             onNavigateToLogin()
         }
     }
@@ -79,19 +97,28 @@ fun RegisterScreen(
 @Composable
 fun SignUpContent(
     isLoading: Boolean,
+    name: String,
     email: String,
     username: String,
     phoneNumber: String,
+    city: String,
+    country: String,
+    bio: String,
     password: String,
     confirmPassword: String,
+    isValidName: Boolean,
     isValidEmail: Boolean,
     isValidUsername: Boolean,
     isValidPhoneNumber: Boolean,
     isValidPassword: Boolean,
     isValidConfirmPassword: Boolean,
+    onNameChange: (String) -> Unit,
     onEmailChange: (String) -> Unit,
     onUsernameChange: (String) -> Unit,
     onPhoneNumberChange: (String) -> Unit,
+    onCityChange: (String) -> Unit,
+    onCountryChange: (String) -> Unit,
+    onBioChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onConfirmPasswordChange: (String) -> Unit,
     onDialogDismiss: () -> Unit,
@@ -124,16 +151,25 @@ fun SignUpContent(
         )
 
         SignUpForm(
+            name = name,
             email = email,
             username = username,
             phoneNumber = phoneNumber,
+            city = city,
+            country = country,
+            bio = bio,
             password = password,
             confirmPassword = confirmPassword,
+            onNameChange = onNameChange,
             onEmailChange = onEmailChange,
             onUsernameChange = onUsernameChange,
             onPhoneNumberChange = onPhoneNumberChange,
+            onCityChange = onCityChange,
+            onCountryChange = onCountryChange,
+            onBioChange = onBioChange,
             onPasswordChange = onPasswordChange,
             onConfirmPasswordChange = onConfirmPasswordChange,
+            isValidName = isValidName,
             isValidEmail = isValidEmail,
             isValidUsername = isValidUsername,
             isValidPhoneNumber = isValidPhoneNumber,
@@ -148,77 +184,142 @@ fun SignUpContent(
 
 @Composable
 private fun SignUpForm(
+    name: String,
     email: String,
     username: String,
     phoneNumber: String,
+    city: String,
+    country: String,
+    bio: String,
     password: String,
     confirmPassword: String,
+    isValidName: Boolean,
     isValidEmail: Boolean,
     isValidUsername: Boolean,
     isValidPhoneNumber: Boolean,
     isValidPassword: Boolean,
     isValidConfirmPassword: Boolean,
+    onNameChange: (String) -> Unit,
     onEmailChange: (String) -> Unit,
     onUsernameChange: (String) -> Unit,
     onPhoneNumberChange: (String) -> Unit,
+    onBioChange: (String) -> Unit,
+    onCountryChange: (String) -> Unit,
+    onCityChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onConfirmPasswordChange: (String) -> Unit,
     onRegisterClick: () -> Unit
 ) {
     Column(
-        modifier = Modifier.padding(
-            start = 16.dp,
-            top = 32.dp,
-            end = 16.dp,
-            bottom = 16.dp
-        )
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        EmailTextField(
+        AppTextField(
+            value = name,
+            label = "Name",
+            onValueChange = onNameChange,
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(horizontal = 16.dp)
                 .background(MaterialTheme.colorScheme.background),
-            value = email,
-            onValueChange = onEmailChange,
-            isError = !isValidEmail
+            leadingIcon = { Icon(Icons.Outlined.Person, "Name") },
+            isError = !isValidName,
+            helperText = stringResource(R.string.message_field_name_invalid)
         )
 
-        UsernameTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.background),
+        AppTextField(
             value = username,
+            label = "Username",
             onValueChange = onUsernameChange,
-            isError = !isValidUsername
-        )
-
-        PhoneNumberTextField(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(horizontal = 16.dp)
                 .background(MaterialTheme.colorScheme.background),
+            leadingIcon = { Icon(Icons.Outlined.AlternateEmail, "Username") },
+            isError = !isValidUsername,
+            helperText = stringResource(R.string.message_field_username_invalid)
+        )
+
+        AppTextField(
+            value = email,
+            label = "Email",
+            onValueChange = onEmailChange,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .background(MaterialTheme.colorScheme.background),
+            leadingIcon = { Icon(Icons.Outlined.Email, "Email") },
+            isError = !isValidEmail,
+            helperText = stringResource(R.string.message_field_email_invalid)
+        )
+
+        AppTextField(
             value = phoneNumber,
+            label = "Phone Number",
             onValueChange = onPhoneNumberChange,
-            isError = !isValidPhoneNumber
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .background(MaterialTheme.colorScheme.background),
+            leadingIcon = { Icon(Icons.Outlined.Phone, "Phone") },
+            isError = !isValidPhoneNumber,
+            helperText = stringResource(R.string.message_field_phone_number_invalid)
+        )
+
+        Row {
+            AppTextField(
+                value = city,
+                label = "City",
+                onValueChange = onCityChange,
+                modifier = Modifier
+                    .fillMaxWidth(0.5f)
+                    .padding(horizontal = 16.dp)
+                    .background(MaterialTheme.colorScheme.background),
+                leadingIcon = { Icon(Icons.Outlined.LocationCity, "City") }
+            )
+
+            AppTextField(
+                value = country,
+                label = "Country",
+                onValueChange = onCountryChange,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .background(MaterialTheme.colorScheme.background),
+                leadingIcon = { Icon(Icons.Outlined.Flag, "Country") }
+            )
+        }
+
+        AppTextField(
+            value = bio,
+            label = "Bio",
+            onValueChange = onBioChange,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .background(MaterialTheme.colorScheme.background),
+            leadingIcon = { Icon(Icons.Outlined.Description, "Bio") },
+            helperText = stringResource(R.string.message_field_bio)
         )
 
         PasswordTextField(
+            value = password,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 16.dp)
+                .padding(horizontal = 16.dp)
                 .background(MaterialTheme.colorScheme.background),
             helperText = stringResource(R.string.message_field_password_invalid),
-            value = password,
             onValueChange = onPasswordChange,
             isError = !isValidPassword
         )
 
         PasswordTextField(
+            value = confirmPassword,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 16.dp)
+                .padding(horizontal = 16.dp)
                 .background(MaterialTheme.colorScheme.background),
             label = "Confirm Password",
             helperText = stringResource(R.string.message_field_confirm_password_invalid),
-            value = confirmPassword,
             onValueChange = onConfirmPasswordChange,
             isError = !isValidConfirmPassword
         )
@@ -226,7 +327,7 @@ private fun SignUpForm(
         FullWidthButton(
             text = "Register",
             onClick = onRegisterClick,
-            modifier = Modifier.padding(top = 32.dp)
+            modifier = Modifier.padding(16.dp)
         )
     }
 }

@@ -4,7 +4,8 @@ import com.ash.traveally.api.UserAPI
 import com.ash.traveally.models.LoginRequest
 import com.ash.traveally.models.LoginResponse
 import com.ash.traveally.models.Message
-import com.ash.traveally.models.RegisterRequest
+import com.ash.traveally.models.RegisterResponse
+import com.ash.traveally.models.User
 import com.ash.traveally.utils.NetworkResult
 import javax.inject.Inject
 
@@ -12,7 +13,7 @@ class UserRepository @Inject constructor(
     private val userAPI: UserAPI
 ) {
 
-    suspend fun registerUser(registerRequest: RegisterRequest): NetworkResult<Message> {
+    suspend fun registerUser(registerRequest: User): NetworkResult<RegisterResponse> {
         try {
             val response = userAPI.register(registerRequest)
             if (response.isSuccessful && response.body() != null) {

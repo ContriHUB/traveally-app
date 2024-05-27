@@ -61,7 +61,6 @@ class LoginViewModel @Inject constructor(
         val isValidEmail = AuthValidator.isValidEmail(loginState.email)
         val isValidPassword = AuthValidator.isValidPassword(loginState.password)
 
-
         loginState = loginState.copy(
             isValidEmail = isValidEmail,
             isValidPassword = isValidPassword
