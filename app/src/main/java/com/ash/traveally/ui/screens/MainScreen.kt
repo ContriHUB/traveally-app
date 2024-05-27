@@ -27,6 +27,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.ash.traveally.models.Blog
+import com.ash.traveally.models.Place
+import com.ash.traveally.models.User
+import com.ash.traveally.ui.components.etc.TopAppBar
 import com.ash.traveally.ui.theme.MontserratAlternates
 import com.ash.traveally.utils.Screens.BLOGS_SCREEN
 import com.ash.traveally.utils.Screens.CHATS_SCREEN
@@ -35,13 +39,19 @@ import com.ash.traveally.utils.Screens.PROFILE_SCREEN
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MainScreen() {
+fun MainScreen(
+    onPlaceClick: (Place) -> Unit,
+    onBlogClick: (Blog) -> Unit,
+    onAddBlogClick: () -> Unit,
+    onChatClick: (User) -> Unit
+) {
     val navController = rememberNavController()
     var selectedItemIndex by remember { mutableIntStateOf(0) }
     Scaffold(
+        topBar = { TopAppBar() },
         bottomBar = {
             NavigationBar {
-                items.forEachIndexed { index, item ->
+                navItems.forEachIndexed { index, item ->
                     NavigationBarItem(
                         selected = selectedItemIndex == index,
                         onClick = {
@@ -66,23 +76,23 @@ fun MainScreen() {
                 startDestination = HOME_SCREEN
             ) {
                 composable(route = HOME_SCREEN) {
-                    HomeScreen()
+                    HomeScreen { onPlaceClick(it) }
                 }
                 composable(route = PROFILE_SCREEN) {
                     ProfileScreen()
                 }
                 composable(route = BLOGS_SCREEN) {
-                    BlogsScreen()
+                    BlogsScreen(onItemClick = { onBlogClick(it) }, onAddBlogClick = { onAddBlogClick() })
                 }
                 composable(route = CHATS_SCREEN) {
-                    ChatsScreen()
+                    ChatsScreen(onChatClick)
                 }
             }
         }
     }
 }
 
-val items = listOf(
+val navItems = listOf(
     BottomNavigationItem(
         title = "Home",
         selectedIcon = Icons.Filled.Home,
