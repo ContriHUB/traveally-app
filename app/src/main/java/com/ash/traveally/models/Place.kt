@@ -1,25 +1,27 @@
 package com.ash.traveally.models
 
 data class Place(
-    val name: String,
-    val city: String,
-    val country: String,
-    val description: String,
-    val price: Int,
-    val rating: Float,
-    val isFavourite: Boolean,
-    val placePhoto: String,
-    val hotelPhoto: String,
-    val hasWifi: Boolean,
-    val hasFood: Boolean,
-    val hasTV: Boolean,
-    val hasPool: Boolean,
-    val hasSpa: Boolean,
-    val hasLaundry: Boolean,
-    val user: User
+    var id: Long,
+    var name: String,
+    var city: String,
+    var country: String,
+    var description: String,
+    var price: Int,
+    var rating: Float,
+    var isFavourite: Boolean,
+    var placePhoto: String,
+    var hotelPhoto: String,
+    var hasWifi: Boolean,
+    var hasFood: Boolean,
+    var hasTV: Boolean,
+    var hasPool: Boolean,
+    var hasSpa: Boolean,
+    var hasLaundry: Boolean,
+    var hostId: Long,
 )
 
 val placeItem = Place(
+    id = 2,
     name = "Luxury Resort",
     city = "Maui",
     country = "USA",
@@ -35,5 +37,5 @@ val placeItem = Place(
     hasPool = true,
     hasTV = true,
     hasLaundry = true,
-    user = userItem
+    hostId = 3
 )

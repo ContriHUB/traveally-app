@@ -29,18 +29,21 @@ import coil.request.ImageRequest
 import coil.size.Size
 import com.ash.traveally.R
 import com.ash.traveally.models.Place
+import com.ash.traveally.ui.components.buttons.LikeButton
 import com.ash.traveally.ui.theme.MontserratAlternates
 
 @Composable
 fun PlaceItem(
     place: Place,
-    onItemClick: (Place) -> Unit
+    onItemClick: (Place) -> Unit,
+    onLikeClick: (Place) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-        modifier = Modifier.clickable { onItemClick(place) }
+        modifier = modifier.clickable { onItemClick(place) }
     ) {
         Box(contentAlignment = Alignment.TopEnd) {
             AsyncImage(
@@ -54,14 +57,13 @@ fun PlaceItem(
                     .padding(8.dp)
                     .clip(shape = RoundedCornerShape(12.dp))
             )
-            IconButton(
-                onClick = {  },
+            LikeButton(
+                onClick = { onLikeClick(place) },
                 modifier = Modifier
                     .size(50.dp)
-                    .padding(end = 10.dp, top = 8.dp)
-            ) {
-                Icon(painter = painterResource(id = R.drawable.ic_favourite_outline), contentDescription = null)
-            }
+                    .padding(end = 10.dp, top = 8.dp),
+                place = place
+            )
         }
         Text(
             text = place.name,

@@ -6,7 +6,9 @@ import com.ash.traveally.utils.Constants.PREFS_TOKEN_FILE
 import com.ash.traveally.utils.Constants.USER_TOKEN
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class TokenManager @Inject constructor(
     @ApplicationContext context: Context
 ) {

@@ -1,17 +1,17 @@
 package com.ash.traveally
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.ash.traveally.ui.screens.AddBlogScreen
 import com.ash.traveally.ui.screens.BlogScreen
 import com.ash.traveally.ui.screens.ChatScreen
-import com.ash.traveally.ui.screens.HomeScreen
 import com.ash.traveally.ui.screens.LoginScreen
 import com.ash.traveally.ui.screens.MainScreen
 import com.ash.traveally.ui.screens.PlaceScreen
@@ -21,7 +21,6 @@ import com.ash.traveally.ui.theme.TraveallyTheme
 import com.ash.traveally.utils.Screens.ADD_BLOG_SCREEN
 import com.ash.traveally.utils.Screens.BLOG_SCREEN
 import com.ash.traveally.utils.Screens.CHAT_SCREEN
-import com.ash.traveally.utils.Screens.HOME_SCREEN
 import com.ash.traveally.utils.Screens.LOGIN_SCREEN
 import com.ash.traveally.utils.Screens.MAIN_SCREEN
 import com.ash.traveally.utils.Screens.PLACE_SCREEN
@@ -65,9 +64,11 @@ fun App() {
             )
         }
         composable(route = MAIN_SCREEN) {
+
             MainScreen (
                 onPlaceClick = {
-                    navController.navigate(PLACE_SCREEN)
+                    navController.navigate(PLACE_SCREEN + "/${it.id}")
+//                    Log.d("MAxy", PLACE_SCREEN + "/${it.id}")
                 },
                 onBlogClick = {
                     navController.navigate(BLOG_SCREEN)
@@ -80,14 +81,27 @@ fun App() {
                 }
             )
         }
-        composable(route = PLACE_SCREEN) {
-            PlaceScreen()
+        composable(
+            route = PLACE_SCREEN + "/{placeId}",
+            arguments = listOf(
+                navArgument("placeId") {
+                    type = NavType.LongType
+                }
+            )
+        ) {
+            PlaceScreen {
+                navController.popBackStack()
+            }
         }
         composable(route = BLOG_SCREEN) {
-            BlogScreen()
+            BlogScreen {
+                navController.popBackStack()
+            }
         }
         composable(route = CHAT_SCREEN) {
-            ChatScreen()
+            ChatScreen {
+                navController.popBackStack()
+            }
         }
         composable(route = ADD_BLOG_SCREEN) {
             AddBlogScreen()

@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,15 +19,54 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.ash.traveally.models.User
-import com.ash.traveally.models.userItem
 import com.ash.traveally.ui.components.buttons.CustomButton
+import com.ash.traveally.ui.components.dialog.FailureDialog
+import com.ash.traveally.ui.components.dialog.LoaderDialog
 import com.ash.traveally.ui.theme.MontserratAlternates
+import com.ash.traveally.viewmodel.ProfileViewModel
+import com.ash.traveally.viewmodel.state.ProfileState
 
 @Composable
-fun ProfileScreen(user: User = userItem) {
+fun ProfileScreen(
+    viewModel: ProfileViewModel = hiltViewModel(),
+    onDialogDismiss: () -> Unit = viewModel::clearError
+) {
+    val state: ProfileState = viewModel.profileState
+
+    if (state.isLoading) {
+        LoaderDialog()
+    }
+
+    if (state.error != null) {
+        FailureDialog("Something went wrong", onDialogDismiss = onDialogDismiss)
+    }
+
+    ProfileContent(
+        name = state.name,
+        username = state.username,
+        email = state.email,
+        phoneNumber = state.phoneNumber,
+        city = state.city,
+        country = state.country,
+        bio = state.bio,
+        photoUrl = state.photoUrl
+    )
+}
+
+@Composable
+fun ProfileContent(
+    name: String,
+    username: String,
+    email: String,
+    phoneNumber: String,
+    city: String,
+    country: String,
+    bio: String,
+    photoUrl: String
+) {
     Column (
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -36,7 +74,7 @@ fun ProfileScreen(user: User = userItem) {
         AsyncImage(
             model = ImageRequest
                 .Builder(LocalContext.current)
-                .data(user.photoUrl)
+                .data(photoUrl)
                 .build(),
             contentDescription = null,
             contentScale = ContentScale.Crop,
@@ -48,7 +86,7 @@ fun ProfileScreen(user: User = userItem) {
         CustomButton(text = "Change Picture", onClick = {})
         Spacer(modifier = Modifier.padding(6.dp))
         Text(
-            text = "Name : " + user.name,
+            text = "Name : " + name,
             style = TextStyle(
                 fontSize = 16.sp,
                 fontFamily = MontserratAlternates
@@ -57,7 +95,7 @@ fun ProfileScreen(user: User = userItem) {
         )
         Divider()
         Text(
-            text = "Username : @" + user.username,
+            text = "Username : @" + username,
             style = TextStyle(
                 fontSize = 16.sp,
                 fontFamily = MontserratAlternates
@@ -66,7 +104,7 @@ fun ProfileScreen(user: User = userItem) {
         )
         Divider()
         Text(
-            text = "Phone Number : " + user.phoneNumber,
+            text = "Phone Number : " + phoneNumber,
             style = TextStyle(
                 fontSize = 16.sp,
                 fontFamily = MontserratAlternates
@@ -75,7 +113,7 @@ fun ProfileScreen(user: User = userItem) {
         )
         Divider()
         Text(
-            text = "Email : " + user.email,
+            text = "Email : " + email,
             style = TextStyle(
                 fontSize = 16.sp,
                 fontFamily = MontserratAlternates
@@ -84,7 +122,7 @@ fun ProfileScreen(user: User = userItem) {
         )
         Divider()
         Text(
-            text = "Location : " + user.city + ", " + user.country,
+            text = "Location : " + city + ", " + country,
             style = TextStyle(
                 fontSize = 16.sp,
                 fontFamily = MontserratAlternates
@@ -93,7 +131,7 @@ fun ProfileScreen(user: User = userItem) {
         )
         Divider()
         Text(
-            text = "Bio : " + user.bio,
+            text = "Bio : " + bio,
             style = TextStyle(
                 fontSize = 16.sp,
                 fontFamily = MontserratAlternates

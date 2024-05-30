@@ -6,7 +6,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -39,7 +38,7 @@ import com.ash.traveally.ui.theme.MontserratAlternates
 import kotlin.time.Duration.Companion.days
 
 @Composable
-fun BlogScreen(blog: Blog = blogItem) {
+fun BlogScreen(blog: Blog = blogItem, onBackClick: () -> Unit) {
     Column (
         modifier = Modifier
             .background(color = Color.White)
@@ -57,7 +56,7 @@ fun BlogScreen(blog: Blog = blogItem) {
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp))
             )
-            BackButton(modifier = Modifier.align(Alignment.TopStart).padding(start  = 8.dp, top = 8.dp))
+            BackButton(modifier = Modifier.align(Alignment.TopStart).padding(start  = 8.dp, top = 8.dp), onClick = onBackClick)
             SaveButton(modifier = Modifier.align(Alignment.TopEnd).padding(end  = 8.dp, top = 8.dp))
         }
         Row(

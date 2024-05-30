@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ash.traveally.R
+import com.ash.traveally.models.Place
 import com.ash.traveally.ui.theme.LightGreen
 import com.ash.traveally.ui.theme.MontserratAlternates
 
@@ -79,9 +80,9 @@ fun CustomButton(
 }
 
 @Composable
-fun BackButton(modifier: Modifier = Modifier) {
+fun BackButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
     IconButton(
-        onClick = {  },
+        onClick = onClick,
         modifier = modifier
     ) {
         Icon(
@@ -96,19 +97,20 @@ fun BackButton(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun LikeButton(modifier: Modifier = Modifier) {
+fun LikeButton(modifier: Modifier = Modifier, onClick: (Place) -> Unit, place: Place) {
     IconButton(
-        onClick = {  },
+        onClick = { onClick(place) },
         modifier = modifier
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_favourite_outline),
+            painter = painterResource(id = if (place.isFavourite) R.drawable.ic_favorite else R.drawable.ic_favourite_outline),
             contentDescription = null,
             modifier = Modifier
                 .size(36.dp)
                 .background(color = Color.White, shape = CircleShape)
                 .padding(4.dp)
             ,
+            tint = Color.Red
         )
     }
 }
