@@ -28,12 +28,11 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.ash.traveally.R
 import com.ash.traveally.models.User
-import com.ash.traveally.models.userItem
 import com.ash.traveally.ui.theme.MontserratAlternates
 
 @Composable
 fun ChatItem(
-    user: User = userItem,
+    user: User,
     onItemClick: (User) -> Unit
 ) {
     Card(

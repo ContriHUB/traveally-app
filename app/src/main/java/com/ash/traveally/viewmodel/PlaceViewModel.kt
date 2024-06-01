@@ -6,7 +6,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ash.traveally.models.Place
 import com.ash.traveally.repository.PlaceRepository
 import com.ash.traveally.repository.UserRepository
 import com.ash.traveally.utils.NetworkResult
@@ -79,18 +78,5 @@ class PlaceViewModel @Inject constructor(
 
     fun clearError() {
         placeState = placeState.copy(error = null, isLoading = false)
-    }
-
-    fun likePlace(place: Place) {
-        viewModelScope.launch {
-            place.isFavourite != place.isFavourite
-            val response = placeRepository.updatePlace(place)
-            when (response) {
-                is NetworkResult.Error -> place.isFavourite != place.isFavourite
-                is NetworkResult.Success -> {
-                    //Liked
-                }
-            }
-        }
     }
 }

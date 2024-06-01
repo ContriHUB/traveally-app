@@ -1,6 +1,5 @@
 package com.ash.traveally.api;
 
-import com.ash.traveally.models.Message
 import com.ash.traveally.models.Place
 import retrofit2.Response
 import retrofit2.http.Body

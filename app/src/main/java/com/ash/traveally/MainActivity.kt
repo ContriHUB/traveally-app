@@ -67,14 +67,13 @@ fun App() {
 
             MainScreen (
                 onPlaceClick = {
-                    navController.navigate(PLACE_SCREEN + "/${it.id}")
-//                    Log.d("MAxy", PLACE_SCREEN + "/${it.id}")
+                    navController.navigate("$PLACE_SCREEN/${it.id}")
                 },
                 onBlogClick = {
-                    navController.navigate(BLOG_SCREEN)
+                    navController.navigate("$BLOG_SCREEN/${it.id}")
                 },
                 onChatClick = {
-                    navController.navigate(CHAT_SCREEN)
+                    navController.navigate("$CHAT_SCREEN/${it.id}")
                 },
                 onAddBlogClick = {
                     navController.navigate(ADD_BLOG_SCREEN)
@@ -82,7 +81,7 @@ fun App() {
             )
         }
         composable(
-            route = PLACE_SCREEN + "/{placeId}",
+            route = "$PLACE_SCREEN/{placeId}",
             arguments = listOf(
                 navArgument("placeId") {
                     type = NavType.LongType
@@ -93,12 +92,26 @@ fun App() {
                 navController.popBackStack()
             }
         }
-        composable(route = BLOG_SCREEN) {
+        composable(
+            route = "$BLOG_SCREEN/{blogId}",
+            arguments = listOf(
+                navArgument("blogId") {
+                    type = NavType.LongType
+                }
+            )
+        ) {
             BlogScreen {
                 navController.popBackStack()
             }
         }
-        composable(route = CHAT_SCREEN) {
+        composable(
+            route = "$CHAT_SCREEN/{userId}",
+            arguments = listOf(
+                navArgument("userId") {
+                    type = NavType.LongType
+                }
+            )
+        ) {
             ChatScreen {
                 navController.popBackStack()
             }

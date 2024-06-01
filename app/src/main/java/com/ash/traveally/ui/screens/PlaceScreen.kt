@@ -60,6 +60,7 @@ fun PlaceScreen(
     if (state.error != null) {
         FailureDialog("Something went wrong", onDialogDismiss = onDialogDismiss)
     }
+
     if (!state.isLoading && state.error == null) {
         Column (
             modifier = Modifier

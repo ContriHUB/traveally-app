@@ -1,6 +1,7 @@
 package com.ash.traveally.models
 
 data class User(
+    val id: Long = 0L,
     val name: String,
     val username: String,
     val phoneNumber: Long,
@@ -8,17 +9,6 @@ data class User(
     val password: String,
     val city: String,
     val country: String,
-    val photoUrl: String = "https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    val photoUrl: String = "https://i.pinimg.com/originals/1c/c5/35/1cc535901e32f18db87fa5e340a18aff.jpg",
     val bio: String
-)
-val userItem = User(
-    name = "John Doe",
-    username = "johndoe3",
-    email = "john.doe@example.com",
-    password = "1234",
-    phoneNumber = 1234567890,
-    city = "New York",
-    country = "USA",
-    photoUrl = "https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-    bio = "I am seasoned travel guide with a decade of experience, transforms trips into extraordinary adventures. From Tokyo's bustling streets to Patagonia's serene landscapes, fostering meaningful connections between travelers and destinations worldwide."
 )

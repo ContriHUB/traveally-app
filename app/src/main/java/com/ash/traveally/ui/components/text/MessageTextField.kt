@@ -1,8 +1,6 @@
 package com.ash.traveally.ui.components.text
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.OutlinedTextField
@@ -23,19 +21,21 @@ import com.ash.traveally.ui.theme.MontserratAlternates
 fun MessageTextField(
     modifier: Modifier = Modifier,
     value: String = "",
+    onMessageChange: (String) -> Unit,
+    onSend: () -> Unit
 ) {
-    Row (modifier = modifier){
+    Row (modifier = modifier) {
         OutlinedTextField(
             value = value,
             label = { Text(text = "Message", fontSize = 14.sp, fontFamily = MontserratAlternates, fontWeight = FontWeight.W500) },
             modifier = Modifier
                 .weight(1f)
                 .testTag("Message"),
-            onValueChange = {  },
+            onValueChange = onMessageChange,
             textStyle = TextStyle(fontSize = 15.sp, fontFamily = MontserratAlternates),
             shape = RoundedCornerShape(8.dp),
             colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = LightGreen, focusedLabelColor = LightGreen)
         )
-        SendButton(modifier = Modifier.padding(top = 10.dp))
+        SendButton(modifier = Modifier.padding(top = 10.dp), onClick = onSend)
     }
 }

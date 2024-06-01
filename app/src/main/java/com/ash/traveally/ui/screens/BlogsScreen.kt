@@ -22,28 +22,45 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.ash.traveally.R
 import com.ash.traveally.models.Blog
-import com.ash.traveally.models.blogItem
+import com.ash.traveally.ui.components.dialog.FailureDialog
+import com.ash.traveally.ui.components.dialog.LoaderDialog
 import com.ash.traveally.ui.components.items.BlogItem
 import com.ash.traveally.ui.components.text.SearchBar
+import com.ash.traveally.viewmodel.BlogsViewModel
+import com.ash.traveally.viewmodel.state.BlogsState
 
 @Composable
 fun BlogsScreen(
+    viewModel: BlogsViewModel = hiltViewModel(),
+    onDialogDismiss: () -> Unit = viewModel::clearError,
+    onLikeClick: (Blog) -> Unit = viewModel::likeBlog,
     onItemClick: (Blog) -> Unit,
     onAddBlogClick: () -> Unit
 ) {
     var search by remember { mutableStateOf("") }
+    val state: BlogsState = viewModel.blogsState
+
+    if (state.isLoading) {
+        LoaderDialog()
+    }
+
+    if (state.error != null) {
+        FailureDialog("Something went wrong", onDialogDismiss = onDialogDismiss)
+    }
+
     Column {
         SearchBar(searchText = search, onSearchTextChanged = { search = it }, modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp))
         LazyVerticalGrid(
-            columns = GridCells.Adaptive(512.dp),
+            columns = GridCells.Fixed(1),
             contentPadding = PaddingValues(12.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            items(blogs) { blog ->
-                BlogItem(blog = blog, onItemClick = onItemClick)
+            items(state.blogs) { blog ->
+                BlogItem(blog = blog, onItemClick = onItemClick, onLikeClick = onLikeClick)
             }
         }
     }
@@ -65,5 +82,3 @@ fun BlogsScreen(
         }
     }
 }
-
-val blogs = listOf(blogItem, blogItem, blogItem, blogItem, blogItem, blogItem, blogItem, blogItem, blogItem)

@@ -1,7 +1,6 @@
 package com.ash.traveally.repository
 
 import com.ash.traveally.api.PlaceAPI
-import com.ash.traveally.models.Message
 import com.ash.traveally.models.Place
 import com.ash.traveally.utils.NetworkResult
 import javax.inject.Inject

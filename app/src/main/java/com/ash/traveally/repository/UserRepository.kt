@@ -3,7 +3,6 @@ package com.ash.traveally.repository
 import com.ash.traveally.api.UserAPI
 import com.ash.traveally.models.LoginRequest
 import com.ash.traveally.models.LoginResponse
-import com.ash.traveally.models.Message
 import com.ash.traveally.models.RegisterResponse
 import com.ash.traveally.models.User
 import com.ash.traveally.utils.NetworkResult

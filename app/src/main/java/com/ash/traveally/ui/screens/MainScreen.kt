@@ -1,7 +1,6 @@
 package com.ash.traveally.ui.screens
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -86,7 +85,7 @@ fun MainScreen(
                     BlogsScreen(onItemClick = { onBlogClick(it) }, onAddBlogClick = { onAddBlogClick() })
                 }
                 composable(route = CHATS_SCREEN) {
-                    ChatsScreen(onChatClick)
+                    ChatsScreen(onItemClick = onChatClick)
                 }
             }
         }

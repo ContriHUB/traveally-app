@@ -12,8 +12,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -30,12 +28,14 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.ash.traveally.R
 import com.ash.traveally.models.Blog
+import com.ash.traveally.ui.components.buttons.LikeButton
 import com.ash.traveally.ui.theme.MontserratAlternates
 
 @Composable
 fun BlogItem(
     blog: Blog,
-    onItemClick: (Blog) -> Unit
+    onItemClick: (Blog) -> Unit,
+    onLikeClick: (Blog) -> Unit
 ) {
     Card(
         shape = RoundedCornerShape(16.dp),
@@ -54,24 +54,24 @@ fun BlogItem(
             Text(
                 text = blog.city + ", " + blog.country,
                 style = TextStyle(
-                    fontSize = 20.sp,
+                    fontSize = 16.sp,
                     fontFamily = MontserratAlternates
                 ),
-                modifier = Modifier.padding(start = 2.dp, top = 6.dp)
+                modifier = Modifier.padding(start = 2.dp, top = 8.dp)
             )
             Spacer(modifier = Modifier.weight(1f))
             Text(
-                text = blog.user.name,
+                text = blog.author.name,
                 style = TextStyle(
-                    fontSize = 18.sp,
+                    fontSize = 14.sp,
                     fontFamily = MontserratAlternates
                 ),
-                modifier = Modifier.padding(top = 8.dp, end = 4.dp)
+                modifier = Modifier.padding(top = 10.dp, end = 4.dp)
             )
             AsyncImage(
                 model = ImageRequest
                     .Builder(LocalContext.current)
-                    .data(blog.user.photoUrl)
+                    .data(blog.author.photoUrl)
                     .build(),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
@@ -93,16 +93,7 @@ fun BlogItem(
                 .padding(horizontal = 8.dp)
                 .clip(shape = RoundedCornerShape(12.dp))
         )
-        IconButton(
-            onClick = {  },
-            modifier = Modifier.padding(start = 4.dp)
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_favourite_outline),
-                contentDescription = null,
-                modifier = Modifier.size(32.dp)
-            )
-        }
+        LikeButton(onClick = onLikeClick, modifier = Modifier.padding(start = 4.dp), blog = blog)
         Text(
             text = blog.likes.toString() + " likes",
             style = TextStyle(

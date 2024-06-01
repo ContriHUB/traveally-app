@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val userRepository: UserRepository
+    private val repository: UserRepository
 ): ViewModel() {
 
     var profileState: ProfileState by mutableStateOf(ProfileState())
@@ -28,7 +28,7 @@ class ProfileViewModel @Inject constructor(
     fun getUser() {
         viewModelScope.launch {
             profileState = profileState.copy(isLoading = true)
-            val response = userRepository.getUser()
+            val response = repository.getUser()
             profileState = when (response) {
                 is NetworkResult.Error -> profileState.copy(error = true, isLoading = false)
                 is NetworkResult.Success -> {
