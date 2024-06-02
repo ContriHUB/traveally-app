@@ -32,6 +32,18 @@ class BlogRepository @Inject constructor(
         return NetworkResult.Error("Something went wrong")
     }
 
+    suspend fun addBlog(blog: Blog): NetworkResult<Blog> {
+        try {
+            val response = blogAPI.addBlog(blog)
+            if (response.isSuccessful && response.body() != null) {
+                return NetworkResult.Success(response.body()!!)
+            }
+        } catch (e: Exception) {
+            return NetworkResult.Error(e.message)
+        }
+        return NetworkResult.Error("Something went wrong")
+    }
+
     suspend fun updateBlog(blog: Blog): NetworkResult<Blog> {
         try {
             val response = blogAPI.updateBlog(blog)

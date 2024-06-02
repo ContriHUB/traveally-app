@@ -26,11 +26,10 @@ class BlogViewModel @Inject constructor(
 
     init { getBlog() }
 
-    fun getBlog() {
+    private fun getBlog() {
         viewModelScope.launch {
             blogState = blogState.copy(isLoading = true)
-            val response = blogRepository.getBlog(blogState.id)
-            when (response) {
+            when (val response = blogRepository.getBlog(blogState.id)) {
                 is NetworkResult.Error -> blogState = blogState.copy(error = true, isLoading = false)
                 is NetworkResult.Success -> {
                     val blog = response.data!!
@@ -42,8 +41,8 @@ class BlogViewModel @Inject constructor(
                         introduction = blog.introduction,
                         description = blog.description,
                         time = blog.time,
-                        authorName = blog.author.name,
-                        authorPhotoUrl = blog.author.photoUrl,
+                        authorName = blog.author!!.name,
+                        authorPhotoUrl = blog.author!!.photoUrl,
                         isLoading = false,
                         blog = blog
                     )
@@ -57,8 +56,7 @@ class BlogViewModel @Inject constructor(
             if (blog == null) return@launch
             blogState = blogState.copy(isLoading = true)
             blog.isSaved = !blog.isSaved
-            val response = blogRepository.updateBlog(blog)
-            when (response) {
+            when (val response = blogRepository.updateBlog(blog)) {
                 is NetworkResult.Error -> blogState = blogState.copy(error = true, isLoading = false, isSaved = !blogState.isSaved)
                 is NetworkResult.Success -> {
                     val data = response.data!!

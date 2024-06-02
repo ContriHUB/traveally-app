@@ -61,7 +61,7 @@ fun BlogItem(
             )
             Spacer(modifier = Modifier.weight(1f))
             Text(
-                text = blog.author.name,
+                text = blog.author!!.name,
                 style = TextStyle(
                     fontSize = 14.sp,
                     fontFamily = MontserratAlternates
@@ -71,7 +71,7 @@ fun BlogItem(
             AsyncImage(
                 model = ImageRequest
                     .Builder(LocalContext.current)
-                    .data(blog.author.photoUrl)
+                    .data(blog.author!!.photoUrl)
                     .build(),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,

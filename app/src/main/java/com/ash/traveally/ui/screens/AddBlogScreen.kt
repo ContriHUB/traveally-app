@@ -15,10 +15,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,79 +24,105 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.compose.rememberNavController
 import com.ash.traveally.R
+import com.ash.traveally.ui.components.dialog.FailureDialog
+import com.ash.traveally.ui.components.dialog.LoaderDialog
 import com.ash.traveally.ui.components.etc.TopAppBar
 import com.ash.traveally.ui.theme.LightGreen
 import com.ash.traveally.ui.theme.MontserratAlternates
+import com.ash.traveally.viewmodel.AddBlogViewModel
+import com.ash.traveally.viewmodel.state.AddBlogState
 
 @Composable
-fun AddBlogScreen() {
-    var title by remember { mutableStateOf("") }
-    var city by remember { mutableStateOf("") }
-    var country by remember { mutableStateOf("") }
-    var introduction by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
+fun AddBlogScreen(
+    viewModel: AddBlogViewModel = hiltViewModel(),
+    onTitleChange: (String) -> Unit = viewModel::setTitle,
+    onCityChange: (String) -> Unit = viewModel::setCity,
+    onCountryChange: (String) -> Unit = viewModel::setCountry,
+    onIntroductionChange: (String) -> Unit = viewModel::setIntroduction,
+    onDescriptonChange: (String) -> Unit = viewModel::setDescription,
+    onDialogDismiss: () -> Unit = viewModel::clearError,
+    onAddBlogClick: () -> Unit = viewModel::insertBlog
+) {
+    val state: AddBlogState = viewModel.addBlogState
+
+    val navController = rememberNavController()
+
+    if (state.isLoading) {
+        LoaderDialog()
+    }
+
+    if (state.error != null) {
+        FailureDialog("Something went wrong", onDialogDismiss = onDialogDismiss)
+    }
+
+    if (state.added) {
+        navController.popBackStack()
+    }
+
     Column (
         verticalArrangement = Arrangement.spacedBy(12.dp),
         modifier = Modifier.padding(12.dp)
     ) {
         TopAppBar()
         OutlinedTextField(
-            value = title,
+            value = state.title,
             label = { Text(text = "Title", fontSize = 14.sp, fontFamily = MontserratAlternates, fontWeight = FontWeight.W500) },
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.1f)
                 .testTag("Title"),
-            onValueChange = { title = it },
+            onValueChange = onTitleChange,
             textStyle = TextStyle(fontSize = 15.sp, fontFamily = MontserratAlternates, color = Color.Black),
             shape = RoundedCornerShape(8.dp),
-            colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = LightGreen, focusedLabelColor = LightGreen)
+            colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = LightGreen, focusedLabelColor = LightGreen),
+            singleLine = true
         )
         Row (horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             OutlinedTextField(
-                value = city,
+                value = state.city,
                 label = { Text(text = "City", fontSize = 14.sp, fontFamily = MontserratAlternates, fontWeight = FontWeight.W500) },
                 modifier = Modifier
                     .fillMaxWidth(0.5f)
                     .testTag("City"),
-                onValueChange = { city = it },
+                onValueChange = onCityChange,
                 textStyle = TextStyle(fontSize = 15.sp, fontFamily = MontserratAlternates, color = Color.Black),
                 shape = RoundedCornerShape(8.dp),
                 colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = LightGreen, focusedLabelColor = LightGreen)
             )
             OutlinedTextField(
-                value = country,
+                value = state.country,
                 label = { Text(text = "Country", fontSize = 14.sp, fontFamily = MontserratAlternates, fontWeight = FontWeight.W500) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("Country"),
-                onValueChange = { country = it },
+                onValueChange = onCountryChange,
                 textStyle = TextStyle(fontSize = 15.sp, fontFamily = MontserratAlternates, color = Color.Black),
                 shape = RoundedCornerShape(8.dp),
                 colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = LightGreen, focusedLabelColor = LightGreen)
             )
         }
         OutlinedTextField(
-            value = introduction,
+            value = state.introduction,
             label = { Text(text = "Introduction", fontSize = 14.sp, fontFamily = MontserratAlternates, fontWeight = FontWeight.W500) },
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight(0.3f)
                 .testTag("Introduction"),
-            onValueChange = { introduction = it },
+            onValueChange = onIntroductionChange,
             textStyle = TextStyle(fontSize = 15.sp, fontFamily = MontserratAlternates, color = Color.Black),
             shape = RoundedCornerShape(8.dp),
             colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = LightGreen, focusedLabelColor = LightGreen)
         )
         OutlinedTextField(
-            value = description,
+            value = state.description,
             label = { Text(text = "Description", fontSize = 14.sp, fontFamily = MontserratAlternates, fontWeight = FontWeight.W500) },
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
                 .testTag("Description"),
-            onValueChange = { description = it },
+            onValueChange = onDescriptonChange,
             textStyle = TextStyle(fontSize = 15.sp, fontFamily = MontserratAlternates, color = Color.Black),
             shape = RoundedCornerShape(8.dp),
             colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = LightGreen, focusedLabelColor = LightGreen)
@@ -109,7 +131,9 @@ fun AddBlogScreen() {
     Column (
         horizontalAlignment = Alignment.End,
         verticalArrangement = Arrangement.Bottom,
-        modifier = Modifier.fillMaxSize().padding(20.dp)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(20.dp)
     ) {
         FloatingActionButton(
             onClick = { }
@@ -118,7 +142,7 @@ fun AddBlogScreen() {
         }
         Spacer(modifier = Modifier.padding(8.dp))
         FloatingActionButton(
-            onClick = {}
+            onClick = onAddBlogClick
         ) {
             Icon(painterResource(id = R.drawable.ic_send),"")
         }
