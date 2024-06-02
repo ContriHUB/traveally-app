@@ -2,7 +2,10 @@ package com.ash.traveally.ui.components.text
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -22,7 +25,8 @@ fun SearchBar(
     modifier: Modifier = Modifier,
     searchText: String,
     onSearchTextChanged: (String) -> Unit,
-    placeholderText: String = "Search"
+    placeholderText: String = "Search",
+    onClearClick: () -> Unit
 ) {
     OutlinedTextField(
         value = searchText,
@@ -33,9 +37,17 @@ fun SearchBar(
         leadingIcon = {
             Icon(painter = painterResource(id = R.drawable.ic_search), contentDescription = null)
         },
+        trailingIcon = {
+            if (searchText.isNotEmpty()) {
+                IconButton(onClick = onClearClick) {
+                    Icon(imageVector = Icons.Default.Clear, contentDescription = "Clear text")
+                }
+            }
+        },
         textStyle = TextStyle(fontSize = 16.sp, fontFamily = MontserratAlternates),
         shape = RoundedCornerShape(8.dp),
-        colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = LightGreen, focusedLabelColor = LightGreen)
+        colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = LightGreen, focusedLabelColor = LightGreen),
+        singleLine = true,
+        maxLines = 1
     )
 }
-

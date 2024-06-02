@@ -23,6 +23,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -50,7 +51,7 @@ fun MainScreen(
     Scaffold(
         topBar = { TopAppBar() },
         bottomBar = {
-            NavigationBar {
+            NavigationBar(containerColor = Color.White) {
                 navItems.forEachIndexed { index, item ->
                     NavigationBarItem(
                         selected = selectedItemIndex == index,
@@ -76,7 +77,7 @@ fun MainScreen(
                 startDestination = HOME_SCREEN
             ) {
                 composable(route = HOME_SCREEN) {
-                    HomeScreen { onPlaceClick(it) }
+                    HomeScreen(onItemClick = { onPlaceClick(it) },)
                 }
                 composable(route = PROFILE_SCREEN) {
                     ProfileScreen()
@@ -85,7 +86,7 @@ fun MainScreen(
                     BlogsScreen(onItemClick = { onBlogClick(it) }, onAddBlogClick = { onAddBlogClick() })
                 }
                 composable(route = CHATS_SCREEN) {
-                    ChatsScreen(onItemClick = onChatClick)
+                    ChatsScreen(onItemClick = onChatClick,)
                 }
             }
         }

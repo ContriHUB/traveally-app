@@ -14,12 +14,10 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -29,6 +27,7 @@ import com.ash.traveally.ui.components.dialog.FailureDialog
 import com.ash.traveally.ui.components.dialog.LoaderDialog
 import com.ash.traveally.ui.components.items.BlogItem
 import com.ash.traveally.ui.components.text.SearchBar
+import com.ash.traveally.ui.theme.LightGreen
 import com.ash.traveally.viewmodel.BlogsViewModel
 import com.ash.traveally.viewmodel.state.BlogsState
 
@@ -37,11 +36,13 @@ fun BlogsScreen(
     viewModel: BlogsViewModel = hiltViewModel(),
     onDialogDismiss: () -> Unit = viewModel::clearError,
     onLikeClick: (Blog) -> Unit = viewModel::likeBlog,
+    onSearch: (String) -> Unit = viewModel::search,
     onItemClick: (Blog) -> Unit,
     onAddBlogClick: () -> Unit
 ) {
-    var search by remember { mutableStateOf("") }
     val state: BlogsState = viewModel.blogsState
+
+    val focusManager: FocusManager = LocalFocusManager.current
 
     if (state.isLoading) {
         LoaderDialog()
@@ -52,7 +53,15 @@ fun BlogsScreen(
     }
 
     Column {
-        SearchBar(searchText = search, onSearchTextChanged = { search = it }, modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp))
+        SearchBar(
+            modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp),
+            searchText = state.search,
+            onSearchTextChanged = onSearch,
+            onClearClick = {
+                viewModel.clearSearch()
+                focusManager.clearFocus()
+            }
+        )
         LazyVerticalGrid(
             columns = GridCells.Fixed(1),
             contentPadding = PaddingValues(12.dp),
@@ -70,13 +79,15 @@ fun BlogsScreen(
         modifier = Modifier.fillMaxSize().padding(16.dp)
     ) {
         FloatingActionButton(
-            onClick = { }
+            onClick = { },
+            containerColor = LightGreen
         ) {
             Icon(painterResource(id = R.drawable.ic_bookmark),"")
         }
         Spacer(modifier = Modifier.padding(8.dp))
         FloatingActionButton(
-            onClick = onAddBlogClick
+            onClick = onAddBlogClick,
+            containerColor = LightGreen
         ) {
             Icon(Icons.Filled.Add,"")
         }

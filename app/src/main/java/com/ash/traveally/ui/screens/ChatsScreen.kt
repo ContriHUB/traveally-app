@@ -7,11 +7,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ash.traveally.models.User
@@ -26,10 +24,12 @@ import com.ash.traveally.viewmodel.state.ChatsState
 fun ChatsScreen(
     viewModel: ChatsViewModel = hiltViewModel(),
     onDialogDismiss: () -> Unit = viewModel::clearError,
+    onSearch: (String) -> Unit = viewModel::search,
     onItemClick: (User) -> Unit
 ) {
-    var search by remember { mutableStateOf("") }
     val state: ChatsState = viewModel.chatsState
+
+    val focusManager: FocusManager = LocalFocusManager.current
 
     if (state.isLoading) {
         LoaderDialog()
@@ -44,7 +44,15 @@ fun ChatsScreen(
         modifier = Modifier.fillMaxHeight()
     ) {
         item {
-            SearchBar(searchText = search, onSearchTextChanged = { search = it }, modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp))
+            SearchBar(
+                modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp),
+                searchText = state.search,
+                onSearchTextChanged = onSearch,
+                onClearClick = {
+                    viewModel.clearSearch()
+                    focusManager.clearFocus()
+                }
+            )
         }
         items(state.users) {
             ChatItem(it, onItemClick)

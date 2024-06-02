@@ -10,6 +10,8 @@ import com.ash.traveally.repository.BlogRepository
 import com.ash.traveally.utils.NetworkResult
 import com.ash.traveally.viewmodel.state.BlogsState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,13 +22,15 @@ class BlogsViewModel @Inject constructor(
 
     var blogsState: BlogsState by mutableStateOf(BlogsState())
 
+    private var job: Job? = null
+
     init { getAllBlogs() }
 
     fun clearError() {
         blogsState = blogsState.copy(error = null)
     }
 
-    fun getAllBlogs() {
+    private fun getAllBlogs() {
         viewModelScope.launch {
             blogsState = blogsState.copy(isLoading = true)
             val response = repository.getAllBlogs()
@@ -34,7 +38,7 @@ class BlogsViewModel @Inject constructor(
                 is NetworkResult.Error -> blogsState.copy(error = true, isLoading = false)
                 is NetworkResult.Success -> {
                     val blogs = response.data!!
-                    blogsState.copy(blogs = blogs, isLoading = false)
+                    blogsState.copy(blogs = blogs, backup = blogs, isLoading = false)
                 }
             }
         }
@@ -44,8 +48,7 @@ class BlogsViewModel @Inject constructor(
         viewModelScope.launch {
             blogsState = blogsState.copy(isLoading = true)
             blog.isFavourite = !blog.isFavourite
-            val response = repository.updateBlog(blog)
-            when (response) {
+            when (val response = repository.updateBlog(blog)) {
                 is NetworkResult.Error -> {
                     blogsState = blogsState.copy(error = true, isLoading = false)
                     blog.isFavourite = !blog.isFavourite
@@ -57,5 +60,33 @@ class BlogsViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun search(query: String) {
+        blogsState = blogsState.copy(search = query)
+        job?.cancel()
+        job = viewModelScope.launch {
+            delay(1000)
+            blogsState = blogsState.copy(isLoading = true)
+            val blogs = blogsState.backup
+            val result = mutableListOf<Blog>()
+            blogs.forEach {
+                if (
+                    it.title.contains(query) ||
+                    it.introduction.contains(query) ||
+                    it.description.contains(query) ||
+                    it.city.contains(query) ||
+                    it.country.contains(query)
+                ) {
+                    result.add(it)
+                }
+            }
+            blogsState = blogsState.copy(blogs = result, isLoading = false)
+        }
+    }
+
+
+    fun clearSearch() {
+        blogsState = blogsState.copy(blogs = blogsState.backup, search = "")
     }
 }

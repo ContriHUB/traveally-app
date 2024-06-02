@@ -8,11 +8,9 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ash.traveally.models.Place
@@ -28,10 +26,12 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onDialogDismiss: () -> Unit = viewModel::clearError,
     onLikeClick: (Place) -> Unit = viewModel::likePlace,
+    onSearch: (String) -> Unit = viewModel::search,
     onItemClick: (Place) -> Unit
 ) {
-    var search by remember { mutableStateOf("") }
     val state: HomeState = viewModel.homeState
+
+    val focusManager: FocusManager = LocalFocusManager.current
 
     if (state.isLoading) {
         LoaderDialog()
@@ -42,7 +42,15 @@ fun HomeScreen(
     }
 
     Column {
-        SearchBar(searchText = search, onSearchTextChanged = { search = it }, modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp))
+        SearchBar(
+            modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp),
+            searchText = state.search,
+            onSearchTextChanged = onSearch,
+            onClearClick = {
+                viewModel.clearSearch()
+                focusManager.clearFocus()
+            }
+        )
         LazyVerticalGrid(
             columns = GridCells.Fixed(1),
             contentPadding = PaddingValues(12.dp),

@@ -64,7 +64,6 @@ fun App() {
             )
         }
         composable(route = MAIN_SCREEN) {
-
             MainScreen (
                 onPlaceClick = {
                     navController.navigate("$PLACE_SCREEN/${it.id}")
