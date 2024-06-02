@@ -77,16 +77,19 @@ fun MainScreen(
                 startDestination = HOME_SCREEN
             ) {
                 composable(route = HOME_SCREEN) {
-                    HomeScreen(onItemClick = { onPlaceClick(it) },)
+                    HomeScreen { onPlaceClick(it) }
                 }
                 composable(route = PROFILE_SCREEN) {
                     ProfileScreen()
                 }
                 composable(route = BLOGS_SCREEN) {
-                    BlogsScreen(onItemClick = { onBlogClick(it) }, onAddBlogClick = { onAddBlogClick() })
+                    BlogsScreen(
+                        onItemClick = { onBlogClick(it) },
+                        onAddBlogClick = { onAddBlogClick() }
+                    )
                 }
                 composable(route = CHATS_SCREEN) {
-                    ChatsScreen(onItemClick = onChatClick,)
+                    ChatsScreen { onChatClick(it) }
                 }
             }
         }

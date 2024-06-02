@@ -37,6 +37,7 @@ fun BlogsScreen(
     onDialogDismiss: () -> Unit = viewModel::clearError,
     onLikeClick: (Blog) -> Unit = viewModel::likeBlog,
     onSearch: (String) -> Unit = viewModel::search,
+    onSavedClick: () -> Unit = viewModel::savedBlogs,
     onItemClick: (Blog) -> Unit,
     onAddBlogClick: () -> Unit
 ) {
@@ -79,7 +80,7 @@ fun BlogsScreen(
         modifier = Modifier.fillMaxSize().padding(16.dp)
     ) {
         FloatingActionButton(
-            onClick = { },
+            onClick = onSavedClick,
             containerColor = LightGreen
         ) {
             Icon(painterResource(id = R.drawable.ic_bookmark),"")

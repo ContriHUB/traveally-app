@@ -89,4 +89,18 @@ class BlogsViewModel @Inject constructor(
     fun clearSearch() {
         blogsState = blogsState.copy(blogs = blogsState.backup, search = "")
     }
+
+    fun savedBlogs() {
+        viewModelScope.launch {
+            blogsState = blogsState.copy(isLoading = true)
+            val blogs = blogsState.backup
+            val result = mutableListOf<Blog>()
+            blogs.forEach {
+                if (it.isSaved) {
+                    result.add(it)
+                }
+            }
+            blogsState = blogsState.copy(blogs = result, isLoading = false)
+        }
+    }
 }
