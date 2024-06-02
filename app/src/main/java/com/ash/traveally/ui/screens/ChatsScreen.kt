@@ -55,7 +55,10 @@ fun ChatsScreen(
             )
         }
         items(state.users) {
-            ChatItem(it, onItemClick)
+            ChatItem(it, onItemClick = {
+                viewModel.addUser(it.id)
+                onItemClick(it)
+            })
         }
     }
 }

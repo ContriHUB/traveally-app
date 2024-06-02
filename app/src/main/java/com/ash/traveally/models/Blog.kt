@@ -1,7 +1,7 @@
 package com.ash.traveally.models
 
 data class Blog(
-    var id: Long = 0L,
+    var id: Long? = 0L,
     var author: User? = null,
     var city: String,
     var country: String,

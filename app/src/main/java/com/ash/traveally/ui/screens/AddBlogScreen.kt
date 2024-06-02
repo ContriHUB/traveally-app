@@ -1,5 +1,8 @@
 package com.ash.traveally.ui.screens
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.ash.traveally.R
 import com.ash.traveally.ui.components.dialog.FailureDialog
@@ -44,11 +48,10 @@ fun AddBlogScreen(
     onIntroductionChange: (String) -> Unit = viewModel::setIntroduction,
     onDescriptonChange: (String) -> Unit = viewModel::setDescription,
     onDialogDismiss: () -> Unit = viewModel::clearError,
-    onAddBlogClick: () -> Unit = viewModel::insertBlog
+    uploadImage: () -> Unit = viewModel::uploadImage,
+    onAddBlogClick: () -> Unit
 ) {
     val state: AddBlogState = viewModel.addBlogState
-
-    val navController = rememberNavController()
 
     if (state.isLoading) {
         LoaderDialog()
@@ -58,9 +61,13 @@ fun AddBlogScreen(
         FailureDialog("Something went wrong", onDialogDismiss = onDialogDismiss)
     }
 
-    if (state.added) {
-        navController.popBackStack()
-    }
+    val singlePhotoPicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = {
+            state.imageUri = it
+            uploadImage()
+        }
+    )
 
     Column (
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -136,14 +143,18 @@ fun AddBlogScreen(
             .padding(20.dp)
     ) {
         FloatingActionButton(
-            onClick = { }
-        ) {
+            onClick = {
+                singlePhotoPicker.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )
+            }) {
             Icon(painterResource(id = R.drawable.ic_attach),"")
         }
         Spacer(modifier = Modifier.padding(8.dp))
-        FloatingActionButton(
-            onClick = onAddBlogClick
-        ) {
+        FloatingActionButton(onClick = {
+            viewModel.insertBlog()
+            onAddBlogClick()
+        }) {
             Icon(painterResource(id = R.drawable.ic_send),"")
         }
     }

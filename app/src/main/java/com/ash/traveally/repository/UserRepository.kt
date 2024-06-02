@@ -62,4 +62,16 @@ class UserRepository @Inject constructor(
         }
         return NetworkResult.Error("Something went wrong")
     }
+
+    suspend fun updateUser(user: User): NetworkResult<User> {
+        try {
+            val response = userAPI.updateUser(user, "Bearer ${tokenManager.getToken()}")
+            if (response.isSuccessful && response.body() != null) {
+                return NetworkResult.Success(response.body()!!);
+            }
+        } catch (e : Exception) {
+            return NetworkResult.Error(e.message);
+        }
+        return NetworkResult.Error("Something went wrong")
+    }
 }

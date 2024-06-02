@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ash.traveally.dao.MessageDao
+import com.ash.traveally.dao.FirebaseDao
 import com.ash.traveally.repository.UserRepository
 import com.ash.traveally.utils.NetworkResult
 import com.ash.traveally.viewmodel.state.ChatState
@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(
-    private val messageDao: MessageDao,
+    private val firebaseDao: FirebaseDao,
     private val userRepository: UserRepository,
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
@@ -54,7 +54,7 @@ class ChatViewModel @Inject constructor(
                     )
                 }
             }
-            messageDao.getAllMessages(chatState.userId1, chatState.userId2).collectLatest {
+            firebaseDao.getAllMessages(chatState.userId1, chatState.userId2).collectLatest {
                 chatState = chatState.copy(messages = it)
             }
         }
@@ -63,7 +63,7 @@ class ChatViewModel @Inject constructor(
     fun sendMessage() {
         viewModelScope.launch {
             if (chatState.message.isNotBlank()) {
-                messageDao.addMessage(message = chatState.message, userId1 = chatState.userId1, userId2 = chatState.userId2)
+                firebaseDao.addMessage(message = chatState.message, userId1 = chatState.userId1, userId2 = chatState.userId2)
                 chatState = chatState.copy(message = "")
             }
         }

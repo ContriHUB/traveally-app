@@ -90,4 +90,16 @@ class ChatsViewModel @Inject constructor(
     fun clearSearch() {
         chatsState = chatsState.copy(users = chatsState.backup, search = "")
     }
+
+    fun addUser(userId: Long) {
+        viewModelScope.launch {
+            chatsState = chatsState.copy(isLoading = true)
+            chatsState = when (chatRepository.addChat(userId = userId)) {
+                is NetworkResult.Error -> chatsState.copy(error = true, isLoading = false)
+                is NetworkResult.Success -> {
+                    chatsState.copy(isLoading = false)
+                }
+            }
+        }
+    }
 }

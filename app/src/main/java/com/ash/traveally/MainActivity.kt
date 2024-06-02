@@ -116,7 +116,9 @@ fun App() {
             }
         }
         composable(route = ADD_BLOG_SCREEN) {
-            AddBlogScreen()
+            AddBlogScreen {
+                navController.popBackStack()
+            }
         }
     }
 }

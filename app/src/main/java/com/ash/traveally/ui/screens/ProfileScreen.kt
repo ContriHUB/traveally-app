@@ -1,5 +1,8 @@
 package com.ash.traveally.ui.screens
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,7 +35,8 @@ import com.ash.traveally.viewmodel.state.ProfileState
 @Composable
 fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
-    onDialogDismiss: () -> Unit = viewModel::clearError
+    onDialogDismiss: () -> Unit = viewModel::clearError,
+    uploadImage: () -> Unit = viewModel::uploadImage
 ) {
     val state: ProfileState = viewModel.profileState
 
@@ -44,16 +48,20 @@ fun ProfileScreen(
         FailureDialog("Something went wrong", onDialogDismiss = onDialogDismiss)
     }
 
-    ProfileContent(
-        name = state.name,
-        username = state.username,
-        email = state.email,
-        phoneNumber = state.phoneNumber,
-        city = state.city,
-        country = state.country,
-        bio = state.bio,
-        photoUrl = state.photoUrl
-    )
+    if (!state.isLoading && state.error == null) {
+        ProfileContent(
+            name = state.name,
+            username = state.username,
+            email = state.email,
+            phoneNumber = state.phoneNumber,
+            city = state.city,
+            country = state.country,
+            bio = state.bio,
+            photoUrl = state.photoUrl,
+            state = state,
+            uploadImage = uploadImage
+        )
+    }
 }
 
 @Composable
@@ -65,8 +73,18 @@ fun ProfileContent(
     city: String,
     country: String,
     bio: String,
-    photoUrl: String
+    photoUrl: String,
+    state: ProfileState,
+    uploadImage: () -> Unit
 ) {
+    val singlePhotoPicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = {
+            state.imageUri = it
+            uploadImage()
+        }
+    )
+
     Column (
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -83,10 +101,14 @@ fun ProfileContent(
                 .clip(CircleShape)
                 .border(4.dp, Color.Black, CircleShape)
         )
-        CustomButton(text = "Change Picture", onClick = {})
+        CustomButton(text = "Change Picture", onClick = {
+            singlePhotoPicker.launch(
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            )
+        })
         Spacer(modifier = Modifier.padding(6.dp))
         Text(
-            text = "Name : " + name,
+            text = "Name : $name",
             style = TextStyle(
                 fontSize = 16.sp,
                 fontFamily = MontserratAlternates
@@ -95,7 +117,7 @@ fun ProfileContent(
         )
         Divider()
         Text(
-            text = "Username : @" + username,
+            text = "Username : @$username",
             style = TextStyle(
                 fontSize = 16.sp,
                 fontFamily = MontserratAlternates
@@ -104,7 +126,7 @@ fun ProfileContent(
         )
         Divider()
         Text(
-            text = "Phone Number : " + phoneNumber,
+            text = "Phone Number : $phoneNumber",
             style = TextStyle(
                 fontSize = 16.sp,
                 fontFamily = MontserratAlternates
@@ -113,7 +135,7 @@ fun ProfileContent(
         )
         Divider()
         Text(
-            text = "Email : " + email,
+            text = "Email : $email",
             style = TextStyle(
                 fontSize = 16.sp,
                 fontFamily = MontserratAlternates
@@ -122,7 +144,7 @@ fun ProfileContent(
         )
         Divider()
         Text(
-            text = "Location : " + city + ", " + country,
+            text = "Location : $city, $country",
             style = TextStyle(
                 fontSize = 16.sp,
                 fontFamily = MontserratAlternates
@@ -131,7 +153,7 @@ fun ProfileContent(
         )
         Divider()
         Text(
-            text = "Bio : " + bio,
+            text = "Bio : $bio",
             style = TextStyle(
                 fontSize = 16.sp,
                 fontFamily = MontserratAlternates

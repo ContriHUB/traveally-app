@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ash.traveally.dao.FirebaseDao
 import com.ash.traveally.models.Blog
 import com.ash.traveally.repository.BlogRepository
 import com.ash.traveally.utils.NetworkResult
@@ -15,6 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddBlogViewModel @Inject constructor(
+    private val firebaseDao: FirebaseDao,
     private val repository: BlogRepository
 ): ViewModel() {
 
@@ -24,17 +26,19 @@ class AddBlogViewModel @Inject constructor(
         viewModelScope.launch {
             addBlogState = addBlogState.copy(isLoading = true)
             val blog = Blog(
+                id = null,
                 title = addBlogState.title,
                 introduction = addBlogState.introduction,
                 description = addBlogState.description,
                 city = addBlogState.city,
-                country = addBlogState.country
+                country = addBlogState.country,
+                placePhoto = addBlogState.placePhoto
             )
-            when (val response = repository.addBlog(blog)) {
-                is NetworkResult.Error -> addBlogState =
-                    addBlogState.copy(error = true, isLoading = false)
+            addBlogState = when (val response = repository.addBlog(blog)) {
+                is NetworkResult.Error -> addBlogState.copy(error = true, isLoading = false)
                 is NetworkResult.Success -> {
-                    addBlogState = addBlogState.copy(added = true)
+                    val data = response.data!!
+                    addBlogState.copy(isLoading = false)
                 }
             }
         }
@@ -61,6 +65,19 @@ class AddBlogViewModel @Inject constructor(
     }
 
     fun clearError() {
-        addBlogState = addBlogState.copy(error = false)
+        addBlogState = addBlogState.copy(error = null)
+    }
+
+    fun uploadImage() {
+        viewModelScope.launch {
+            addBlogState = addBlogState.copy(isLoading = true)
+            addBlogState = when (val response = firebaseDao.uploadImage(addBlogState.imageUri!!)) {
+                is NetworkResult.Error -> addBlogState.copy(error = true, isLoading = false)
+                is NetworkResult.Success -> {
+                    val photoUrl = response.data!!
+                    addBlogState.copy(placePhoto = photoUrl, isLoading = false)
+                }
+            }
+        }
     }
 }

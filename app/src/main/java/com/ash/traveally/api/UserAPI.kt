@@ -9,6 +9,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface UserAPI {
@@ -24,4 +25,7 @@ interface UserAPI {
 
     @GET("/api/auth/user/{id}")
     suspend fun getUser(@Path("id") id: Long, @Header("Authorization") token: String) : Response<User>
+
+    @PUT("/api/auth/user/update")
+    suspend fun updateUser(@Body user: User, @Header("Authorization") token: String) : Response<User>
 }
